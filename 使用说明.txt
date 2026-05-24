@@ -1,4 +1,4 @@
-第5章 便携pythonzip
+第15章 便携pythonzip
 使用说明：
 1.
 D盘需要放一个便携python。把带的“便携python.zip”解压到D盘。

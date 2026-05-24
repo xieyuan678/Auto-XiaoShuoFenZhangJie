@@ -42,18 +42,33 @@ def clean_empty_lines(content):
 def split_novel_files():
     # 解析命令行参数
     parser = argparse.ArgumentParser(description='小说自动分章工具')
-    parser.add_argument('--start', type=int, default=1, help='起始章节数（默认为1）')
+    parser.add_argument('--start', type=int, default=None, help='起始章节数（默认为1）')
     args = parser.parse_args()
     
     # 核心修改：获取脚本运行时的当前工作目录（由bat文件指定）
     target_folder = os.getcwd()
     print(f"当前处理目录：{target_folder}")
     
-    # 设置起始章节数
-    start_chapter = args.start
-    if start_chapter < 1:
-        print("起始章节数不能小于1，已使用默认值1")
-        start_chapter = 1
+    # 设置起始章节数（支持命令行参数和交互式输入两种模式）
+    if args.start is not None:
+        # 使用命令行参数
+        start_chapter = args.start
+    else:
+        # 交互式输入
+        while True:
+            try:
+                user_input = input("请输入起始章节数（默认为1）：").strip()
+                if not user_input:
+                    start_chapter = 1
+                else:
+                    start_chapter = int(user_input)
+                if start_chapter < 1:
+                    print("起始章节数不能小于1，请重新输入")
+                else:
+                    break
+            except ValueError:
+                print("请输入有效的数字")
+    
     print(f"起始章节数：{start_chapter}")
 
     # 标点符号正则（优化：移除重复字符，简化正则）
