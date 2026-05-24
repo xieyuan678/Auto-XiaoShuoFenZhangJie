@@ -197,6 +197,13 @@ def split_novel_files():
                     chapter_len = 0
                     reached_min = False
                     max_chars = min_chars + 400  # 安全阀上限
+                    
+                    # 累积引号计数（章节级别）
+                    total_open_count = 0
+                    total_close_count = 0
+                    
+                    # 引号配对后，等待段落结束再分章
+                    waiting_for_para_end = False
 
                     while start_pos < total_chars:
                         # 找到下一个段落（到换行或内容结束）
@@ -206,10 +213,14 @@ def split_novel_files():
                         
                         para = content[start_pos:next_newline]
                         
-                        # 检查段落是否有未闭合的引号（统计开始和结束引号数量）
+                        # 统计当前段落的引号数量并累积
                         open_count = sum(para.count(q) for q in open_quotes)
                         close_count = sum(para.count(q) for q in close_quotes)
-                        in_dialogue = open_count > close_count
+                        total_open_count += open_count
+                        total_close_count += close_count
+                        
+                        # 检查是否有未闭合的引号
+                        in_dialogue = total_open_count > total_close_count
 
                         # 累加字数
                         chapter_len += len(para)
@@ -224,9 +235,14 @@ def split_novel_files():
                             start_pos = next_newline + 1
                             break
 
-                        # 如果已达到最小字数，检查是否是纯叙事段落
+                        # 如果已达到最小字数，检查引号是否配对
                         if reached_min and not in_dialogue:
-                            # 找到纯叙事段落，在其结束后分章
+                            # 引号配对完成，等待当前段落结束再分章
+                            waiting_for_para_end = True
+                        
+                        # 如果正在等待段落结束
+                        if waiting_for_para_end:
+                            # 在当前段落结束后分章
                             chapter_paragraphs.append(para)
                             start_pos = next_newline + 1
                             break
