@@ -4,6 +4,12 @@ import traceback
 import sys
 import argparse
 
+# 显示程序标题
+print("="*50)
+print("--------------（小说TXT文件分割工具）-------------")
+print("\n软件用于将小说TXT文件自动分割成多个章节文件                    \n--------------问题反馈，联系作者：xy8011")
+print("="*50)
+
 
 def remove_chapter_headings(content):
     """
@@ -75,12 +81,13 @@ def split_novel_files():
     punctuation_pattern = re.compile(r'[。，；：！？""''()\[\]【】]')
     # 全量清洗标点的正则（移除所有符号，只留纯文字）
     clean_symbol_pattern = re.compile(r'[。，；：！？""''()\[\]【】、·~@#￥%……&*（）—+-={}|《》？“”‘’｛｝【】￥¥∧∨～﹉﹊﹍﹎﹋﹌﹟﹠﹡﹢﹦﹤‐￣¯―]')
-
+    '''
     # 显示程序标题
     print("="*50)
     print("--------------（小说TXT文件分割工具）-------------")
     print("\n软件用于将小说TXT文件自动分割成多个章节文件                    \n--------------问题反馈，联系作者：xy8011")
     # print("="*50)
+     '''
     # 交互式选择每章节最小字数
     print("="*50)
     print("请选择每章节最小字数：")
@@ -88,7 +95,7 @@ def split_novel_files():
     print("  B. 2400字")
     print("  C. 自定义字数")
     print("="*50)
-    
+
     while True:
         choice = input("请输入选择（A/B/C）：").strip().upper()
         if not choice:  # 默认选项
