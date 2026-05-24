@@ -61,7 +61,44 @@ def split_novel_files():
     # 全量清洗标点的正则（移除所有符号，只留纯文字）
     clean_symbol_pattern = re.compile(r'[。，；：！？""''()\[\]【】、·~@#￥%……&*（）—+-={}|《》？“”‘’｛｝【】￥¥∧∨～﹉﹊﹍﹎﹋﹌﹟﹠﹡﹢﹦﹤‐￣¯―]')
 
-    min_chars = 1200  # 每章最少100字（测试用，实际使用时可改回1200）
+    # 显示程序标题
+    print("="*50)
+    print("--------------（小说TXT文件分割工具）-------------")
+    print("\n软件用于将小说TXT文件自动分割成多个章节文件                    \n--------------问题反馈，联系作者：xy8011")
+    # print("="*50)
+    # 交互式选择每章节最小字数
+    print("="*50)
+    print("请选择每章节最小字数：")
+    print("  A. 1200字（默认，直接按回车）")
+    print("  B. 2400字")
+    print("  C. 自定义字数")
+    print("="*50)
+    
+    while True:
+        choice = input("请输入选择（A/B/C）：").strip().upper()
+        if not choice:  # 默认选项
+            min_chars = 1200
+            break
+        elif choice == 'A':
+            min_chars = 1200
+            break
+        elif choice == 'B':
+            min_chars = 2400
+            break
+        elif choice == 'C':
+            try:
+                custom_chars = int(input("请输入自定义字数：").strip())
+                if custom_chars > 0:
+                    min_chars = custom_chars
+                    break
+                else:
+                    print("请输入大于0的数字")
+            except ValueError:
+                print("请输入有效的数字")
+        else:
+            print("无效选项，请输入A、B或C")
+    
+    print(f"已选择每章节最少{min_chars}字")
     min_desc_len = 5  # 标题最少3字（大于2字）
     max_desc_len = 14  # 标题最多14字（小于15字）
 
@@ -266,4 +303,4 @@ def split_novel_files():
 if __name__ == "__main__":
     split_novel_files()
     # 防止bat运行后窗口立即关闭
-    input("\n全部处理完成！按任意键退出...")
+    input("\n全部处理完成！\n--问题反馈，功能定制，软件制作，请加：xy8011\n按任意键退出...")
