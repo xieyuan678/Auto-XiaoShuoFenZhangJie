@@ -224,7 +224,7 @@ def split_novel_files():
                             if min_desc_len <= len(t) <= max_desc_len:
                                 chapter_desc = t
 
-                    # 3. “”不行 → ？前面的内容
+                    # 3. ""不行 → ？前面的内容
                     if not chapter_desc:
                         q_pos = chapter_content.find('？')
                         if q_pos == -1:
@@ -239,6 +239,32 @@ def split_novel_files():
                                 t = bef.strip()
                             if min_desc_len <= len(t) <= max_desc_len:
                                 chapter_desc = t
+
+                    # 4. ：后面的内容
+                    if not chapter_desc:
+                        colon_pos = chapter_content.find('：')
+                        if colon_pos != -1:
+                            t = chapter_content[colon_pos+1:].strip()
+                            if min_desc_len <= len(t) <= max_desc_len:
+                                chapter_desc = t
+
+                    # 5. ——后面的内容
+                    if not chapter_desc:
+                        dash_pos = chapter_content.find('——')
+                        if dash_pos != -1:
+                            t = chapter_content[dash_pos+2:].strip()
+                            if min_desc_len <= len(t) <= max_desc_len:
+                                chapter_desc = t
+
+                    # 6. 兜底：段落前7-14字
+                    if not chapter_desc:
+                        first_period_pos = chapter_content.find('。')
+                        if first_period_pos != -1 and first_period_pos >= min_desc_len:
+                            t = chapter_content[:first_period_pos].strip()
+                        else:
+                            t = chapter_content[:max_desc_len].strip()
+                        if min_desc_len <= len(t) <= max_desc_len:
+                            chapter_desc = t
 
                     # ========== 清洗标题符号 ==========
                     # 1. 移除所有中文/英文标点
