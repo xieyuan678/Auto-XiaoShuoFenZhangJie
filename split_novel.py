@@ -183,23 +183,67 @@ def split_novel_files():
                 chapter_num = start_chapter
                 start_pos = 0
 
-                # 第一步：按规则分割所有候选章节
-                while start_pos < total_chars:
-                    remaining = total_chars - start_pos
+                # 定义中英文引号
+                open_quotes = ['"', '"']
+                close_quotes = ['"', '"']
 
-                    # 分割逻辑：1200字以上 + 取到句号为止
-                    if remaining <= min_chars:
-                        # 先暂存为候选最后一章
-                        chapter_content = content[start_pos:]
-                        end_pos = total_chars
-                    else:
-                        min_pos = start_pos + min_chars
-                        period_pos = content.find('。', min_pos)
-                        if period_pos != -1:
-                            end_pos = period_pos + 1
-                        else:
-                            end_pos = total_chars
-                        chapter_content = content[start_pos:end_pos]
+                # 按段落分割内容
+                paragraphs = content.split('\n')
+
+                # 第一步：按段落分割所有候选章节
+                while start_pos < total_chars:
+                    # 收集当前章节的段落
+                    chapter_paragraphs = []
+                    chapter_len = 0
+                    reached_min = False
+                    max_chars = min_chars + 400  # 安全阀上限
+
+                    while start_pos < total_chars:
+                        # 找到下一个段落（到换行或内容结束）
+                        next_newline = content.find('\n', start_pos)
+                        if next_newline == -1:
+                            next_newline = total_chars
+                        
+                        para = content[start_pos:next_newline]
+                        
+                        # 检查段落是否有未闭合的引号（统计开始和结束引号数量）
+                        open_count = sum(para.count(q) for q in open_quotes)
+                        close_count = sum(para.count(q) for q in close_quotes)
+                        in_dialogue = open_count > close_count
+
+                        # 累加字数
+                        chapter_len += len(para)
+                        
+                        # 检查是否达到最小字数
+                        if chapter_len >= min_chars:
+                            reached_min = True
+
+                        # 安全阀检查
+                        if chapter_len >= max_chars:
+                            chapter_paragraphs.append(para)
+                            start_pos = next_newline + 1
+                            break
+
+                        # 如果已达到最小字数，检查是否是纯叙事段落
+                        if reached_min and not in_dialogue:
+                            # 找到纯叙事段落，在其结束后分章
+                            chapter_paragraphs.append(para)
+                            start_pos = next_newline + 1
+                            break
+                        
+                        # 否则继续添加段落
+                        chapter_paragraphs.append(para)
+                        start_pos = next_newline + 1
+
+                        # 如果还没达到最小字数，继续读
+                        if not reached_min:
+                            continue
+
+                    # 合并章节内容
+                    chapter_content = '\n'.join(chapter_paragraphs)
+                    
+                    # 计算end_pos
+                    end_pos = start_pos
 
                     # 提取标题描述（3-14字规则）
                     chapter_desc = ""
