@@ -316,15 +316,32 @@ def split_novel_files():
                             if min_desc_len <= len(t) <= max_desc_len:
                                 chapter_desc = t
 
-                    # 6. 兜底：段落前7-14字
+                    # 6. 兜底：段落前7-14字（原代码）
+                    # if not chapter_desc:
+                    #     first_period_pos = chapter_content.find('。')
+                    #     if first_period_pos != -1 and first_period_pos >= min_desc_len:
+                    #         t = chapter_content[:first_period_pos].strip()
+                    #     else:
+                    #         t = chapter_content[:max_desc_len].strip()
+                    #     if min_desc_len <= len(t) <= max_desc_len:
+                    #         chapter_desc = t
+                    
+                    # 6. 兜底：找第一个完整分句（新代码）
                     if not chapter_desc:
-                        first_period_pos = chapter_content.find('。')
-                        if first_period_pos != -1 and first_period_pos >= min_desc_len:
-                            t = chapter_content[:first_period_pos].strip()
-                        else:
+                        # 优先找各种标点分隔的分句
+                        for sep in ['。', '，', '；', '！', '？']:  # 先找中文标点
+                            pos = chapter_content.find(sep)
+                            if pos != -1:
+                                t = chapter_content[:pos].strip()
+                                if len(t) >= min_desc_len:
+                                    chapter_desc = t[:max_desc_len]
+                                    break
+                        
+                        # 如果还没找到，直接取前max_desc_len字
+                        if not chapter_desc:
                             t = chapter_content[:max_desc_len].strip()
-                        if min_desc_len <= len(t) <= max_desc_len:
-                            chapter_desc = t
+                            if len(t) > 0:
+                                chapter_desc = t[:max_desc_len]
 
                     # ========== 清洗标题符号 ==========
                     # 1. 移除所有中文/英文标点
