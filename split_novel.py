@@ -5,10 +5,13 @@ import sys
 import argparse
 
 # 显示程序标题
-print("="*50)
-print("--------------（小说TXT文件分割工具）-------------")
-print("\n软件用于将小说TXT文件自动分割成多个章节文件                    \n--------------问题反馈，联系作者：xy8011")
-print("="*50)
+print("-"*80)
+print("                  （小说TXT文件分割工具）                  ")
+print("\n软件用于将小说TXT文件自动分割成多个章节文件")
+print(" "*50)
+print("\n注意：未分好章节的文件名中，不要带“章”字，程序会认为该文件已经分好章节，自动跳过！！")
+print("\n                                                    问题反馈，联系作者：xy8011")
+print("-"*80)
 
 
 def remove_chapter_headings(content):
